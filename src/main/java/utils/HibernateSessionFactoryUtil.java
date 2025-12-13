@@ -4,6 +4,9 @@ import models.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+
+import java.util.Properties;
 
 public class HibernateSessionFactoryUtil {
     private static SessionFactory sessionFactory;
@@ -25,5 +28,27 @@ public class HibernateSessionFactoryUtil {
             }
         }
         return sessionFactory;
+    }
+
+    public static SessionFactory getTestSessionFactory(Properties dbProperties) {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
+            try {
+                Configuration configuration = new Configuration();
+                configuration.addAnnotatedClass(User.class);
+                configuration.setProperties(dbProperties);
+                ServiceRegistry serviceRegistry =
+                        new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (Exception e) {
+                System.out.println("Исключение!" + e);
+            }
+        }
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        if (sessionFactory != null) {
+            sessionFactory.close();
+        }
     }
 }

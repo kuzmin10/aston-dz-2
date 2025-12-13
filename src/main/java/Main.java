@@ -12,8 +12,11 @@ public class Main {
         UserService userService = new UserService();
         Scanner scanner = new Scanner(System.in);
         User user;
-        String name, email;
-        int input, id, age;
+        String name;
+        String email;
+        int input;
+        int id;
+        int age;
         List<User> list;
 
         while (true) {
