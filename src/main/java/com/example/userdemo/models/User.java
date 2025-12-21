@@ -1,4 +1,4 @@
-package models;
+package com.example.userdemo.models;
 
 import jakarta.persistence.*;
 
@@ -17,6 +17,7 @@ public class User {
     private Timestamp created_at;
 
     public User() {
+        this.created_at = new Timestamp(System.currentTimeMillis());
     }
 
     public User(String name, int age, String email) {
