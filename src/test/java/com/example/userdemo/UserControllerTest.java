@@ -8,8 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -22,6 +28,9 @@ public class UserControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private KafkaTemplate<String, String> kafkaTemplate;
 
     @Test
     void crudTest() throws Exception {
@@ -37,6 +46,8 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.age").value(user.getAge()))
                 .andExpect(jsonPath("$.created_at").exists())
                 .andReturn().getResponse().getContentAsString();
+
+        verify(kafkaTemplate, atLeastOnce()).send(eq("user-notifications"), anyString());
 
         UserDto createdUser = objectMapper.readValue(response, UserDto.class);
         Integer userId = createdUser.getId();
@@ -64,6 +75,8 @@ public class UserControllerTest {
 
         mockMvc.perform(delete("/api/users/" + userId))
                 .andExpect(status().isOk());
+
+        verify(kafkaTemplate, atLeastOnce()).send(eq("user-notifications"), anyString());
 
         mockMvc.perform(get("/api/users"))
                 .andExpect(status().isOk())
