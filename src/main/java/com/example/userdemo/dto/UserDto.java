@@ -1,12 +1,28 @@
 package com.example.userdemo.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.sql.Timestamp;
 
+@Schema(description = "Объект передачи данных пользователя")
 public class UserDto {
+    @Schema(description = "Уникальный идентификатор", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private int id;
+
+    @Schema(description = "Имя пользователя", example = "Иван Иванов")
     private String name;
+
+    @Schema(description = "Электронная почта пользователя", example = "ivan@gmail.com")
     private String email;
+
+    @Schema(description = "Возраст пользователя", example = "25")
     private int age;
+
+    @Schema(
+            description = "Дата и время создания пользователя",
+            example = "2026-01-05T14:30:00.000+00:00",
+            accessMode = Schema.AccessMode.READ_ONLY
+    )
     private Timestamp created_at;
 
     public UserDto() {}
